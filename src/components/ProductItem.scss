@@ -2,3 +2,29 @@
   position: relative;
 }
 
+.view_product {
+  position: absolute;
+  bottom: 0.4rem;
+  padding: 0.7rem;
+  text-align: center;
+  width: 100%;
+  background-color: rgba(109, 132, 255, 0.71);
+  color: white;
+  cursor: pointer;
+}
+
+.rating_and_reviews_container {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.org_price {
+  text-decoration: line-through;
+  color: gray;
+  padding-right: 0.2rem;
+}
+
+.dis_price {
+  color: rgb(6, 101, 243);
+}
