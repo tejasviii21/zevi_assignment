@@ -28,3 +28,20 @@
 .dis_price {
   color: rgb(6, 101, 243);
 }
+.wishlist_icon_container {
+  text-align: end;
+  position: absolute;
+  top: 0.2rem;
+  right: 0.4rem;
+  font-size: 1.5rem;
+  z-index: 10;
+
+  & > * {
+    cursor: pointer;
+  }
+}
+
+.product_img {
+  width: 100%;
+  border-radius: 0.2rem;
+}
