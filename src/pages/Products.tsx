@@ -58,7 +58,7 @@ const Products = () => {
       filter1Applied = true;
     }
 
-    else if (multipleFilters.rating.includes(true)) {
+     if (multipleFilters.rating.includes(true)) {
       for (let i = 0; i < multipleFilters.rating.length; i++) {
         if (multipleFilters.rating[i]) {
           tempProducts.forEach((product) => {
@@ -71,7 +71,7 @@ const Products = () => {
       filter2Applied = true;
     }
 
-   else if (multipleFilters.price[0]) {
+   if (multipleFilters.price[0]) {
       tempProducts.forEach((product) => {
         if (product.productDisPrice < 500) {
           filteredData.push(product);
