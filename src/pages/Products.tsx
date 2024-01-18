@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./Products.scss";
 import ProductsNavBar from "../components/ProductsNavBar";
+
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+
 import ProductsResults from "../components/ProductsResults";
 import { ratingBox } from "../Utilities/utilities";
+
 import { ProductType, fetchProducts } from "../FakerData/FakerData";
 
 interface MultipleFilterType {
@@ -33,56 +36,253 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    let filteredData: ProductType[] = [];
-
-    const applyBrandFilter = multipleFilters.brand.includes(true);
-    const applyRatingFilter = multipleFilters.rating.includes(true);
-    const applyPriceFilter = multipleFilters.price.includes(true);
-
-    if (applyBrandFilter || applyRatingFilter || applyPriceFilter) {
-      filteredData = tempProducts.filter((product) => {
-        let matchesBrand = true;
-        let matchesRating = true;
-        let matchesPrice = true;
-
-        if (applyBrandFilter) {
-          matchesBrand = multipleFilters.brand.every(
-            (filter, index) => !filter || product.productName === ["Incredible Frozen Table", "Tasty Wooden Car"][index]
-          );
-        }
-
-        if (applyRatingFilter) {
-          matchesRating = multipleFilters.rating.some(
-            (filter, index) => filter && product.productRating === index + 1
-          );
-        }
-
-        if (applyPriceFilter) {
-          const [under500, from1000to3000] = multipleFilters.price;
-          matchesPrice =
-            (under500 && product.productDisPrice < 500) ||
-            (from1000to3000 &&
-              product.productDisPrice >= 1000 &&
-              product.productDisPrice <= 3000);
-        }
-
-        return matchesBrand && matchesRating && matchesPrice;
+    let filteredData: ProductType[] = [...tempProducts];
+  
+    if (multipleFilters.brand.includes(true)) {
+      filteredData = filteredData.filter((product) => {
+        return (
+          (multipleFilters.brand[0] && product.productName === "Incredible Frozen Table") ||
+          (multipleFilters.brand[1] && product.productName === "Tasty Wooden Car")
+        );
       });
-    } else {
-      filteredData = tempProducts;
     }
-
-    setProducts(filteredData);
+  
+    if (multipleFilters.rating.includes(true)) {
+      const ratingsFilter = multipleFilters.rating.map((value, index) => value ? index + 1 : null).filter(Boolean);
+      if (ratingsFilter.length > 0) {
+        filteredData = filteredData.filter((product) => ratingsFilter.includes(product.productRating));
+      }
+    }
+  
+    if (multipleFilters.price[0]) {
+      filteredData = filteredData.filter((product) => product.productDisPrice < 500);
+    }
+  
+    if (multipleFilters.price[1]) {
+      filteredData = filteredData.filter((product) => product.productDisPrice >= 1000 && product.productDisPrice <= 3000);
+    }
+  
+    setProducts(filteredData.length > 0 ? filteredData : tempProducts);
   }, [multipleFilters, tempProducts]);
+  
+
+  console.log(multipleFilters);
 
   return (
     <div className="products_page">
       <ProductsNavBar />
       <h2>Search Results</h2>
       <div className="filter_and_result_container">
-        {/* ... Your existing filter UI code ... */}
+        <div className="filter_container">
+          <div className="">
+            <div
+              onClick={() => setShowBrandFilter((prev) => !prev)}
+              className="dropdown_container"
+            >
+              <div className="filter_title">BRAND</div>
+              {showBrandFilter ? (
+                <BiChevronUp size={24} />
+              ) : (
+                <BiChevronDown size={24} />
+              )}
+            </div>
+            {showBrandFilter && (
+              <div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.brand[0]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.brand];
+                      updatedFilter[0] = !updatedFilter[0];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        brand: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>Incredible Frozen Table</label>
+                </div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.brand[1]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.brand];
+                      updatedFilter[1] = !updatedFilter[1];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        brand: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>Tasty Wooden Car</label>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="filter_divider"></div>
+          <div className="">
+            <div
+              onClick={() => setShowPriceFilter((prev) => !prev)}
+              className="dropdown_container"
+            >
+              <div className="filter_title">PRICE RANGE</div>
+              {showPriceFilter ? (
+                <BiChevronUp size={24} />
+              ) : (
+                <BiChevronDown size={24} />
+              )}
+            </div>
+            {showPriceFilter && (
+              <div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.price[0]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.price];
+                      updatedFilter[0] = !updatedFilter[0];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        price: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>Under 500</label>
+                </div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.price[1]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.price];
+                      updatedFilter[1] = !updatedFilter[1];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        price: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>1000 to 3000</label>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="filter_divider"></div>
+          <div className="">
+            <div
+              onClick={() => setShowRatingFilter((prev) => !prev)}
+              className="dropdown_container"
+            >
+              <div className="filter_title">RATINGS</div>
+              {showRatingFilter ? (
+                <BiChevronUp size={24} />
+              ) : (
+                <BiChevronDown size={24} />
+              )}
+            </div>
+            {showRatingFilter && (
+              <div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.rating[4]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.rating];
+                      updatedFilter[4] = !updatedFilter[4];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        rating: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>{ratingBox(5)}</label>
+                </div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.rating[3]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.rating];
+                      updatedFilter[3] = !updatedFilter[3];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        rating: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>{ratingBox(4)}</label>
+                </div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.rating[2]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.rating];
+                      updatedFilter[2] = !updatedFilter[2];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        rating: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>{ratingBox(3)}</label>
+                </div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.rating[1]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.rating];
+                      updatedFilter[1] = !updatedFilter[1];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        rating: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>{ratingBox(2)}</label>
+                </div>
+                <div className="input_label_container">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    checked={multipleFilters.rating[0]}
+                    onChange={() => {
+                      const updatedFilter = [...multipleFilters.rating];
+                      updatedFilter[0] = !updatedFilter[0];
+                      setMultipleFilters({
+                        ...multipleFilters,
+                        rating: updatedFilter,
+                      });
+                    }}
+                  />
+                  <label>{ratingBox(1)}</label>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <ProductsResults products={products} />
       </div>
-      <ProductsResults products={products} />
     </div>
   );
 };
